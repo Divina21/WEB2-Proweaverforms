@@ -1,0 +1,18 @@
+<!-- wp:paragraph -->
+<p>Show your support for the Lynn Lewis Foundation by sending your donations online. We thank you for your generosity.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><a class="bot-buttons-new" href="charity-organization-become-a-member">Become A Member</a></p>
+
+<img class="qr_code" src="https://www.lynnlewisfoundation.com/wp-content/uploads/2021/09/QR-Code.png" alt="qr code" width="160" height="160" class="alignnone size-full wp-image-549" />
+
+<form class="donate_btn" action="https://www.paypal.com/donate" method="post" target="_blank">
+<input type="hidden" name="hosted_button_id" value="9D2HKT5KMN9TG" />
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+</form>
+
+
+<p>[pof src="donate_form"]</p>
+<!-- /wp:paragraph -->
