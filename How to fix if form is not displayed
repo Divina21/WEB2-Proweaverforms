@@ -1,0 +1,23 @@
+Solution no. 1
+Go to :
+wp-content/plugins/proweaverforms/forms/payment-assets/config-payment.php
+
+Comment:
+$wpblogheader = search_file($_SERVER['DOCUMENT_ROOT'], "wp-blog-header.php");
+
+Add this code above the comment:
+
+$scriptPath = dirname(__FILE__);
+$path = realpath($scriptPath . '/./');
+$filepath = explode("wp-content",$path);
+define('WP_USE_THEMES', false);
+require(''.$filepath[0].'/wp-systcon/wp-blog-header.php');
+
+Solution no. 2
+Comment:
+$wpblogheader = search_file($_SERVER['DOCUMENT_ROOT'], "wp-blog-header.php");
+
+Add this code above the comment:
+
+$sys_path = $_SERVER['DOCUMENT_ROOT']. 'wp-systcon';
+$wpblogheader = search_file($sys_path, "wp-blog-header.php");
