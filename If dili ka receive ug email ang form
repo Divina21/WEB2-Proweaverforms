@@ -18,5 +18,51 @@ define('COMP_NAME', 'Progressive Alliance For The Targeted Health (PATH)'); //Co
 define('MAIL_TYPE', 2); // 1 - html, 2 - txt
 define('MAIL_DOMAIN', 'www.progressivealliancetargetedhealth.org'); //company domain
 
+============================================================================================================================================================================
 
 Solution 2 ( kung naka PHP Mail siya )
+
+============================================================================================================================================================================
+
+Solution 3
+---------- Send Email in Old Form ------------
+
+/** wp-content/themes/<theme-name>/forms/config.php **/
+For Testing mode:
+1. Locate $from_email variable and change value to 'noreply@proweaver.com'
+2. Change $testform value to true.
+3. Change $to_email array value to 'webtestreceive@gmail.com'.
+
+For Live mode:
+1. Locate $from_email variable and change value to <client's email>
+2. Change $testform value to false.
+3. Change $to_email array value to '' for the else statement.
+
+/** wp-content/themes/<theme-name>/forms/functions.php **/
+1. If not set, change require_once 'swiftmailer/mail.php' to send_email_curl.php below comment // for email notification.
+2. Then under comment //name of sender, change
+------------------------------------------------------------------------------------------------------------------------------------------------------
+     $result = insertDB($name,$subject,$body,$attachments);
+
+     $templateVars = array('{link}' => get_home_url().'/onlineforms/'.$_SESSION['token'], '{company}' => COMPANY_NAME);
+
+     Mail::Send($template, 'New Message Notification', $templateVars, $to_email, $to_name, $from_email, $from_name, $cc, $bcc);
+------------------------------------------------------------------------------------------------------------------------------------------------------
+     to
+------------------------------------------------------------------------------------------------------------------------------------------------------
+     $result = insertDB($name,$subject,$body,$attachments);
+
+     $parameter = array(
+	'body' => $body,
+	'from' => $from_email,
+	'from_name' => $from_name,
+	'to' => $to_email,
+	'subject' => 'New Message Notification',
+	'attachment' => $attachments,
+	'comb' => true,
+	// 'debug' => true
+     );
+------------------------------------------------------------------------------------------------------------------------------------------------------
+3. Change // if($status == 'TESTING') to if(send_email($parameter))
+
+============================================================================================================================================================================
