@@ -1,0 +1,7 @@
+Internal Server Error (500)
+
+Case #1. Sa kani kay dili mo basa ang form eneg submit kay mo pop-up ang error nga Internal Server Error.
+Solution.
+1. Check sa console kung asa nga file nag error.
+2. If sa ajax-payment.php, re-create ra nimo ang file then refresh.
+3. You can also copy the code then create a new file then paste. E delete na ang daan nga file.
