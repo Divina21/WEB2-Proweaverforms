@@ -1,0 +1,7 @@
+kani akoang gipang comment out master ay naa man siya "[ ]". mao nag cause ug error
+bali tanan nga naay inani kay akoa ra gi remove
+=============
+error sa php nga ni return. na dugay pud ko pangita 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
