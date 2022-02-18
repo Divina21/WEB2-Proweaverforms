@@ -1,0 +1,1898 @@
+// Customize iyang Menu then online form ang gigamit
+// For example link (https://www.fivestarsrestaurant.com/restaurant-menu)
+// Code Below
+
+================================================================================================================================================================================
+//new_menu.php
+
+<?php
+require_once 'payment-assets/config-payment.php';
+require_once 'FormsClass.php';
+$input = new FormsClass();
+
+$selectedgateways = array_filter($gateways);
+$gatewayname = array_keys($selectedgateways);
+$gcount = count($selectedgateways);
+$btn_text = 'Pay';
+if(DONATION){
+  $btn_text = 'Donate';
+}
+?>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Online Payment Form</title>
+<link rel="stylesheet" href="payment-assets/css/bootstrap.min.css">
+<link rel="stylesheet" href="payment-assets/css/fa-solid.min.css">
+<link rel="stylesheet" href="payment-assets/css/fontawesome.min.css">
+<?php if ($gateways['authorize'] || $gateways['payeezy']): ?>
+<link rel="stylesheet" href="payment-assets/css/card.css">
+<?php endif; ?>
+<link rel="stylesheet" href="payment-assets/css/square.css">
+<link rel="stylesheet" href="payment-assets/css/style.css">
+<style>
+   @media only screen and (max-width: 768px) {
+    .main_dishes .form_box_col2 .group {
+        width: 100% !important;
+    }
+   }
+   @media only screen and (max-width: 365px) {
+      #form_recaptcha {
+         transform: scale(0.77); transform-origin: 0 0;
+      }
+   }
+    input[type='checkbox'].wskCheckbox {
+      display: none;
+    }
+    .text_uppercase {
+        text-transform: uppercase;
+        margin-bottom: 5px;
+        display: inline-block;
+    }
+    .strong_head {
+        padding: 20px 0;
+        background: #ffb22d;
+        font-weight: bold;
+        text-align: center;
+        color: #0b7e9d;
+        font-size: 19px;
+        text-transform: uppercase;
+    }
+    .main_dishes .form_box_col2 .group {
+        width: 100%;
+    }
+    .main_dishes .group {
+        display: inline-block;
+        padding: 10px 0 10px 10px;
+        vertical-align: top;
+        float: left;
+    }
+    .sub_h {
+    color: #ffb22d;
+    text-shadow: 0 0 2px #0000002b;
+    letter-spacing: 2px;
+    font-size: 30px !important;
+    display: block !important;
+    text-align: center;
+    }
+    .sub_h2 {
+    color: #ffb22d;
+    text-shadow: 0 0 2px #0000002b;
+    letter-spacing: 2px;
+    font-size: 20px;
+    text-align: center;
+    }
+    .form_label label {
+    color: #0b7e9d;
+    font-size: 20px;
+    }
+    .rice_label label {
+    color: #0a932c;
+    font-size: 15px;
+    }
+    .intro_txt {
+        font-family: "Segoe UI", "Source Sans Pro", Calibri, Candara, Arial, sans-serif !important;
+      text-align: center;
+      width: 80%;
+      margin: 0 auto 25px;
+      padding: 15px;
+      border-bottom: 3px solid #ff8808;
+      font-weight: 600;
+      font-size: 22px;
+    }
+</style>
+<script type="text/javascript">
+  var onloadCallback = function() {
+    grecaptcha.render('form_recaptcha', {
+      'sitekey' : '6LftnpIUAAAAAGSTlCV2ZtZxiKevQ7SrM5baht7p'
+    });
+  };
+</script>
+</head>
+	<body>
+		<div>
+      <div id="coverpage">
+        <div class="spinner-box">
+          <div class="spinner">
+            <div class="rect1"></div>
+            <div class="rect2"></div>
+            <div class="rect3"></div>
+            <div class="rect4"></div>
+            <div class="rect5"></div>
+          </div>
+          <p>Loading Form</p>
+          <p>Please Wait...</p>
+        </div>
+      </div>
+      <div class="entry-content">
+          <div class="intro_txt">Redefining casual dining with simple yet bold menu options</div>
+      </div>
+			<form id="paymentform" class="" action="" method="post">
+        <input type="hidden" id="is_valid" value="false">
+			  <fieldset>
+					<br />
+						<div class="col-sm-12">
+							<div class="form-row">
+								<div class="col-sm-12">
+								<?php if(TEST_MODE) : ?>
+									<div class="alert alert-dismissible alert-info"><button type="button" class="close" data-dismiss="alert">&times;</button><strong><i class="fas fa-info-circle"></i></strong> Test mode is enabled. While in test mode, no live transactions are processed</div>
+								<?php endif; ?>
+									<div id="alert" hidden>
+										<p class="mb-0" id="alert-content"></p>
+									</div>
+								</div>
+							</div>
+            <?php if(empty($payments)): ?>
+							<?php if(DONATION): ?>
+							<div class="form-row">
+								<div class="col-sm-12">
+										<div class="btn-group-toggle" data-toggle="buttons">
+                      <?php if (!empty($donation_amounts)): ?>
+                      <?php foreach ($donation_amounts as $amount): ?>
+                        <label class="btn btn-lg btn-outline-secondary mb-1">
+                          <input type="radio" name="payment" autocomplete="off" value="<?=$amount;?>" /> $<?=$amount;?>
+                        </label>
+                      <?php endforeach; ?>
+                        <label class="btn btn-lg btn-outline-secondary mb-1">
+  												<input type="radio" name="payment" autocomplete="off" value="Other" /> Custom Amount
+  											</label>
+                      <?php endif; ?>
+										</div>
+								</div>
+							</div>
+						<?php endif; ?>
+							<?php if(DONATION && RECURRING): ?>
+							<div class="form-row">
+								<div class="col-sm-12 mb-3">
+									<div class="custom-control custom-control-lg custom-checkbox custom-control-inline">
+										<input type="checkbox" class="custom-control-input" name="Recurring" id="Recurring" value="true">
+										<label class="custom-control-label" for="Recurring">Make this transaction </label>
+									</div>
+                  <select name="Recurring_Frequency" disabled class="custom-select custom-control-inline col-sm-4 col-md-3 col-lg-2" id="Recurring_Frequency">
+                    <option value="Day">Daily</option>
+                    <option value="Week">Weekly</option>
+                    <option selected value="Month">Monthly</option>
+                    <option value="Year">Yearly</option>
+                  </select>
+								</div>
+							</div>
+						<?php endif; ?>
+            <?php else: ?>
+              <div class="form-row">
+                  <div class="col-md-6 mb-3">
+                    <label for="Payment_For">Payment</label>
+                    <div class="input-group">
+                      <!-- <div class="input-group-prepend">
+                        <span class="input-group-text" id="Payment_ForPrepend"><i class="fas fa-money-bill-alt"></i></span>
+                      </div> -->
+                      <select class="custom-select form-control-lg required" name="Payment_For">
+                        <option value="" selected disabled hidden>Select Payment</option>
+                        <?php foreach ($payments as $key => $value): ?>
+                          <?php if ($value==''): ?>
+                            <option value="<?= $key; ?>" data-amount="<?= $value; ?>"><?= $key; ?></option>
+                          <?php elseif(is_array($value)): ?>
+                              <optgroup label="<?= $key; ?>">
+                            <?php foreach ($value as $key2 => $value2): ?>
+                              <?php if ($value2==''): ?>
+                                <option value="<?= $key2; ?>" data-amount="<?= $value2; ?>"><?= $key2; ?></option>
+                              <?php elseif(strpos($value2, '|') !== false): ?>
+                                <?php $minmax2 = explode('|', $value2); ?>
+                                <option value="<?= $key2; ?> [$<?= number_format((float)$minmax2[0], 2, '.', ''); ?> - $<?= number_format((float)$minmax2[1], 2, '.', ''); ?>]" data-amount="<?= $value2; ?>"><?= $key2; ?> [$<?= number_format((float)$minmax2[0], 2, '.', ''); ?> - $<?= number_format((float)$minmax2[1], 2, '.', ''); ?>]</option>
+                              <?php else: ?>
+                                <option value="<?= $key2; ?> [$<?= number_format((float)$value2, 2, '.', ''); ?>]" data-amount="<?= number_format((float)$value2, 2, '.', ''); ?>"><?= $key2; ?> [$<?= number_format((float)$value2, 2, '.', ''); ?>]</option>
+                              <?php endif; ?>
+                            <?php endforeach; ?>
+                            </optgroup>
+                          <?php elseif(strpos($value, '|') !== false): ?>
+                            <?php $minmax = explode('|', $value); ?>
+                            <option value="<?= $key; ?> [$<?= number_format((float)$minmax[0], 2, '.', ''); ?> - $<?= number_format((float)$minmax[1], 2, '.', ''); ?>]" data-amount="<?= $value; ?>"><?= $key; ?> [$<?= number_format((float)$minmax[0], 2, '.', ''); ?> - $<?= number_format((float)$minmax[1], 2, '.', ''); ?>]</option>
+                          <?php else: ?>
+                            <option value="<?= $key; ?> [$<?= number_format((float)$value, 2, '.', ''); ?>]" data-amount="<?= number_format((float)$value, 2, '.', ''); ?>"><?= $key; ?> [$<?= number_format((float)$value, 2, '.', ''); ?>]</option>
+                          <?php endif; ?>
+                        <?php endforeach; ?>
+                      </select>
+                      <!-- <input type="text" name="Payment_For" class="form-control form-control-lg required" id="Payment_For" placeholder="Enter payment details" aria-describedby="Payment_ForPrepend"> -->
+                      <div class="invalid-tooltip">
+                        Please select a payment option
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="Amount">Amount <i id="amounttooltip" class="fas fa-question-circle" data-toggle="tooltip" title="Enter amount here." style="display:none;"></i></label>
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text" id="AmountPrepend"><i class="fas fa-dollar-sign"></i></span>
+                      </div>
+                      <input type="number" step="0.01" min="0.01" name="Amount" class="form-control form-control-lg required" id="Amount" placeholder="0.00" aria-describedby="AmountPrepend" readonly />
+                      <div class="invalid-tooltip">
+                        Please provide a valid amount
+                      </div>
+                    </div>
+                  </div>
+              </div>
+          <?php endif; ?>
+          <div class="form-row">
+              <div class="col-sm-12">
+                  <legend>Personal Information</legend>
+              </div>
+          </div>
+          <div class="form-row">
+            <div class="col-md-12 mb-3">
+              <label for="First_Name">Full Name</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id=""><i class="fas fa-user"></i></span>
+                </div>
+                <input type="text" name="First_Name" class="form-control form-control-lg required" id="First_Name" placeholder="First Name">
+                <input type="text" name="Last_Name" class="form-control form-control-lg required" id="Last_Name" placeholder="Last Name">
+                <div class="invalid-tooltip">
+                  Please enter your name
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="col-md-6 mb-3">
+              <label for="Email">Email</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id=""><i class="fas fa-envelope"></i></span>
+                </div>
+                <input type="email" name="Email" class="form-control form-control-lg required" id="Email" placeholder="Enter your email address">
+                <div class="invalid-tooltip">
+                  Please enter a valid email address
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="Phone">Phone Number</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id=""><i class="fas fa-phone"></i></span>
+                </div>
+                <input type="tel" name="Phone" class="form-control form-control-lg" id="Phone" placeholder="Enter your phone number (optional)">
+                <div class="invalid-tooltip"></div>
+              </div>
+            </div>
+                           </div>
+                           <div class="form-row">
+                             <div class="col-md-12 mb-3">
+                               <label for="Additional_Information">Additional Information (optional)</label>
+                               <div class="input-group">
+                                 <div class="input-group-prepend">
+                                   <span class="input-group-text" id=""><i class="fas fa-sticky-note"></i></span>
+                                 </div>
+                                 <textarea name="Additional_Information" class="form-control form-control-lg" id="Additional_Information" placeholder="Enter any additional information" rows="3"></textarea>
+                                 <div class="invalid-tooltip">
+
+                                 </div>
+                               </div>
+                             </div>
+                           </div>
+						<hr/>
+
+
+          <div class="form-row" style="display:none">
+            <div class="col-md-6 mb-3">
+                <!-- <label for="Amount">Amount</label> -->
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="AmountPrepend"><i class="fas fa-dollar-sign"></i></span>
+                    </div>
+                    <input type="number" step="0.01" min="0.01" name="Amount" class="form-control form-control-lg required" id="Amount" placeholder="0.00" aria-describedby="AmountPrepend" />
+                    <div class="invalid-tooltip">
+                        Please provide a valid amount
+                    </div>
+                </div>
+            </div>
+          </div>
+                  <!-- <p class="strong_head">Menu </p> -->
+          <div class="form_box main_dishes">
+              <label class="text_uppercase sub_h">
+                  <p class="strong_head text-white">Meat Lovers </p>
+              </label>
+              <div class="form-row">
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Fried_Pork/Griot" value="9.99" id="Fried_Pork/Griot">
+                        <label class="form-check-label" for="Fried_Pork/Griot">
+                          <strong>Fried Pork/Griot - $9.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Caribbean_Oxtail/Queue_Boeuf" value="9.99" id="Caribbean_Oxtail/Queue_Boeuf">
+                        <label class="form-check-label" for="Caribbean_Oxtail/Queue_Boeuf">
+                          <strong>Caribbean Oxtail/Queue Boeuf - $9.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Turkey_Fried_or_Stewed/Dinde" value="8.99" id="Turkey_Fried_or_Stewed/Dinde">
+                        <label class="form-check-label" for="Turkey_Fried_or_Stewed/Dinde">
+                          <strong>Turkey Fried or Stewed/Dinde - $8.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Fried_Goat/Stew_Goat/Cabrit" value="10.99" id="Fried_Goat/Stew_Goat/Cabrit">
+                        <label class="form-check-label" for="Fried_Goat/Stew_Goat/Cabrit">
+                          <strong>Fried Goat/Stew Goat/Cabrit - $10.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Fried_Fish/Grilled_Fish/Poisson" value="19.99" id="Fried_Fish/Grilled_Fish/Poisson">
+                        <label class="form-check-label" for="Fried_Fish/Grilled_Fish/Poisson">
+                          <strong>Fried Fish/Grilled_Fish/Poisson - $19.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Caribbean_Veggies_&_Meat/Legume" value="8.99" id="Caribbean_Veggies_&_Meat/Legume">
+                        <label class="form-check-label" for="Caribbean_Veggies_&_Meat/Legume">
+                          <strong>Caribbean Veggies & Meat/Legume - $8.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Fried_Conch/Stew_Conch/Lambi" value="14.99" id="Fried_Conch/Stew_Conch/Lambi">
+                        <label class="form-check-label" for="Fried_Conch/Stew_Conch/Lambi">
+                          <strong>Fried Conch/Stew Conch/Lambi - $14.99</strong>
+                        </label>
+                    </div>
+                  </div>
+              </div>
+            </div>
+
+            <div class="form_box main_dishes">
+                <label class="text_uppercase sub_h">
+                    <p class="strong_head text-white">Side Orders </p>
+                </label>
+                <div class="form-row">
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="White_Rice" value="1.99" id="White_Rice">
+                        <label class="form-check-label" for="White_Rice">
+                          <strong>White Rice - $1.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Black_Beans" value="1.99" id="Black_Beans">
+                        <label class="form-check-label" for="Black_Beans">
+                          <strong>Black Beans - $1.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Black_Mushroom_Rice" value="3.99" id="Black_Mushroom_Rice">
+                        <label class="form-check-label" for="Black_Mushroom_Rice">
+                          <strong>Black Mushroom Rice - $3.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Rice_and_Red_Beans" value="2.99" id="Rice_and_Red_Beans">
+                        <label class="form-check-label" for="Rice_and_Red_Beans">
+                          <strong>Rice and Red Beans - $2.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Caribbean_Vegetable_Rice" value="2.99" id="Caribbean_Vegetable_Rice">
+                        <label class="form-check-label" for="Caribbean_Vegetable_Rice">
+                          <strong>Caribbean Vegetable Rice - $2.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Fried_Green_Plantain" value="3.99" id="Fried_Green_Plantain">
+                        <label class="form-check-label" for="Fried_Green_Plantain">
+                          <strong>Fried Green Plantain - $3.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Fried_Sweet_Plantain" value="2.99" id="Fried_Sweet_Plantain">
+                        <label class="form-check-label" for="Fried_Sweet_Plantain">
+                          <strong>Fried Sweet Plantain - $2.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Conch_Fritters" value="4.99" id="Conch_Fritters">
+                        <label class="form-check-label" for="Conch_Fritters">
+                          <strong>Conch Fritters - $4.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Macaroni_and_Cheese_(Caribbean_Style)" value="4.99" id="Macaroni_and_Cheese_(Caribbean_Style)">
+                        <label class="form-check-label" for="Macaroni_and_Cheese_(Caribbean_Style)">
+                          <strong>Macaroni and Cheese (Caribbean Style) - $4.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Macaroni_and_Cheese_(Kids)" value="2.99" id="Macaroni_and_Cheese_(Kids)">
+                        <label class="form-check-label" for="Macaroni_and_Cheese_(Kids)">
+                          <strong>Macaroni and Cheese (Kids) - $2.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Green_Beans" value="1.99" id="Green_Beans">
+                        <label class="form-check-label" for="Green_Beans">
+                          <strong>Green Beans - $1.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="French_Fries" value="1.99" id="French_Fries">
+                        <label class="form-check-label" for="French_Fries">
+                          <strong>French Fries - $1.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Squash_Soup" value="4.99" id="Squash_Soup">
+                        <label class="form-check-label" for="Squash_Soup">
+                          <strong>Squash Soup - $4.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Stew/Bouillon" value="5.99" id="Stew/Bouillon">
+                        <label class="form-check-label" for="Stew/Bouillon">
+                          <strong>Stew/Bouillon - $5.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Chicken_Salad" value="5.99" id="Chicken_Salad">
+                        <label class="form-check-label" for="Chicken_Salad">
+                          <strong>Chicken Salad - $5.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                </div>
+            </div>
+
+            <div class="form_box main_dishes">
+                <label class="text_uppercase sub_h">
+                    <p class="strong_head text-white">Lunch and Dinner Special </p>
+                </label>
+                <div class="form-row">
+                    <div class="col-md-4 mb-3">
+                      <div class="form-check">
+                          <input class="form-check-input" type="checkbox" name="Caribbean_Veggies_&_Meat/_Legume" value="4.99" id="Caribbean_Veggies_&_Meat/_Legume">
+                          <label class="form-check-label" for="Caribbean_Veggies_&_Meat/_Legume">
+                            <strong>Caribbean Veggies & Meat/ Legume - $4.99</strong>
+                          </label>
+                      </div>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                      <div class="form-check">
+                          <input class="form-check-input" type="checkbox" name="Chicken_Wings_and_Rice" value="4.99" id="Chicken_Wings_and_Rice">
+                          <label class="form-check-label" for="Chicken_Wings_and_Rice">
+                            <strong>Chicken Wings and Rice - $4.99</strong>
+                          </label>
+                      </div>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                      <div class="form-check">
+                          <input class="form-check-input" type="checkbox" name="Fried_Pork_and_Rice" value="4.99" id="Fried_Pork_and_Rice">
+                          <label class="form-check-label" for="Fried_Pork_and_Rice">
+                            <strong>Fried Pork and Rice - $4.99</strong>
+                          </label>
+                      </div>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                      <div class="form-check">
+                          <input class="form-check-input" type="checkbox" name="Fried_Pork_and_Fried_Plantain" value="4.99" id="Fried_Pork_and_Fried_Plantain">
+                          <label class="form-check-label" for="Fried_Pork_and_Fried_Plantain">
+                            <strong>Fried Pork and Fried Plantain - $4.99</strong>
+                          </label>
+                      </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="form_box main_dishes">
+                <label class="text_uppercase sub_h">
+                    <p class="strong_head text-white">Sweets </p>
+                </label>
+                <div class="form-row">
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Organic_Juice" value="4.99" id="Organic_Juice">
+                        <label class="form-check-label" for="Organic_Juice">
+                          <strong>Organic Juice - $4.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Smoothies" value="4.99" id="Smoothies">
+                        <label class="form-check-label" for="Smoothies">
+                          <strong>Smoothies - $4.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Cake_(Slice)" value="2.99" id="Cake_(Slice)">
+                        <label class="form-check-label" for="Cake_(Slice)">
+                          <strong>Cake (Slice) - $2.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                </div>
+            </div>
+
+            <div class="form_box main_dishes">
+                <label class="text_uppercase sub_h">
+                    <p class="strong_head text-white">Poultry </p>
+                </label>
+                <div class="form-row">
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Chicken_Wings_Fried_or_Grilled" value="6.99" id="Chicken_Wings_Fried_or_Grilled">
+                        <label class="form-check-label" for="Chicken_Wings_Fried_or_Grilled">
+                          <strong>Chicken Wings, Fried or Grilled - $6.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Curry_Chicken" value="6.99" id="Curry_Chicken">
+                        <label class="form-check-label" for="Curry_Chicken">
+                          <strong>Curry Chicken - $6.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Stew_Chicken" value="7.99" id="Stew_Chicken">
+                        <label class="form-check-label" for="Stew_Chicken">
+                          <strong>Stew Chicken - $7.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Chicken_Nuggets" value="7.99" id="Chicken_Nuggets">
+                        <label class="form-check-label" for="Chicken_Nuggets">
+                          <strong>Chicken Nuggets - $7.99</strong>
+                        </label>
+                    </div>
+                  </div>
+
+                </div>
+            </div>
+
+                    <hr/>
+                    <div class="form-row">
+                       <div class="col-md-12 mb-3">
+                           <div id="form_recaptcha" class="required"></div>
+                           <!-- <div class="g-recaptcha" data-callback="recaptchaCallback" data-sitekey="== xxxxxx =="></div> -->
+                       </div>
+                    </div>
+                  <hr/>
+                  <?php if(TEST_EMAIL){ ?>
+                     <!-- <div>hello</div> -->
+                  <?php }else{ ?>
+							<div class="form-row" <?php	if($gcount == 1){echo 'hidden';} ?>>
+								<div class="col-sm-12">
+									<legend>Payment Gateway</legend>
+								</div>
+							</div>
+
+							<?php	if($gcount == 0): ?>
+								<div class="alert alert-dismissible alert-info"><button type="button" class="close" data-dismiss="alert">&times;</button><strong><i class="fas fa-exclamation-triangle"></i> </strong> No payment gateway(s) enabled</div>
+							<?php endif; ?>
+							<div class="form-row" <?php	if($gcount == 1){echo 'hidden';} ?>>
+								<div class="col-sm-12 mb-3">
+										<div class="btn-group-toggle payment-gateway" data-toggle="buttons">
+											<?php if ($gateways['paypal']): ?>
+												<label class="btn btn-lg btn-outline-primary mb-1">
+													<input type="radio" name="gateway" autocomplete="off" value="paypal" <?= (($gcount == 1) && $gateways['paypal'])?'checked':''; ?> />
+													<img src="payment-assets/img/paypal.png" alt="PayPal">
+												</label>
+											<?php endif; ?>
+											<?php if ($gateways['authorize']): ?>
+											<label class="btn btn-lg btn-outline-primary mb-1">
+												<input type="radio" name="gateway" autocomplete="off" value="authorize" <?= (($gcount == 1) && $gateways['authorize'])?'checked':''; ?> />
+												<img src="payment-assets/img/authorize.png" alt="Authorize.Net">
+											</label>
+											<?php endif; ?>
+											<?php if ($gateways['stripe']): ?>
+											<label class="btn btn-lg btn-outline-primary mb-1">
+												<input type="radio" name="gateway" autocomplete="off" value="stripe" <?= (($gcount == 1) && $gateways['stripe'])?'checked':''; ?> />
+												<img src="payment-assets/img/stripe.png" alt="Stripe">
+											</label>
+											<?php endif; ?>
+											<?php if ($gateways['payeezy']): ?>
+											<label class="btn btn-lg btn-outline-primary mb-1">
+												<input type="radio" name="gateway" autocomplete="off" value="payeezy" <?= (($gcount == 1) && $gateways['payeezy'])?'checked':''; ?> />
+												<img src="payment-assets/img/payeezy.png" alt="Payeezy">
+											</label>
+											<?php endif; ?>
+                      <?php if ($gateways['square']): ?>
+                      <label class="btn btn-lg btn-outline-primary mb-1">
+                        <input type="radio" name="gateway" autocomplete="off" value="square" <?= (($gcount == 1) && $gateways['square'])?'checked':''; ?> />
+                        <img src="payment-assets/img/square.png" alt="Square">
+                      </label>
+                      <?php endif; ?>
+										</div>
+								</div>
+							</div>
+							<div id="creditcard">
+								<div class="form-row">
+									<div class="col-md-6">
+										<div class="form-row">
+											<div class="col-md-12 text-left mb-3">
+												<div class="card-wrapper mb-3"></div>
+											</div>
+										</div>
+										<div class="form-row">
+											<div class="col-md-12 mb-3">
+												<label for="Card_Number">Card Number <i class="fas fa-question-circle" data-toggle="tooltip" title="The (typically) 16 digits on the front of your credit card."></i></label>
+												<div class="input-group">
+													<div class="input-group-prepend">
+												    <span class="input-group-text"><i class="fas fa-credit-card"></i></span>
+												  </div>
+													<input type="text" name="number" class="form-control form-control-lg required" id="Card_Number" placeholder="•••• •••• •••• ••••">
+													<input type="hidden" name="type">
+													<div class="invalid-tooltip">
+														Please enter your card number.
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="form-row">
+											<div class="col-md-12 mb-3">
+												<label for="Card_FName">Name on Card <i class="fas fa-question-circle" data-toggle="tooltip" title="The name printed on the front of your credit card."></i></label>
+												<div class="input-group">
+												  <div class="input-group-prepend">
+												    <span class="input-group-text" id=""><i class="fas fa-user"></i></span>
+												  </div>
+												  <input type="text" name="fname" class="form-control form-control-lg required" id="Card_FName" placeholder="First Name">
+												  <input type="text" name="lname" class="form-control form-control-lg required" id="Card_LName" placeholder="Last Name">
+													<div class="invalid-tooltip">
+														Please enter your name.
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="form-row">
+											<div class="col-md-6 mb-3">
+												<label for="Card_Expiry_Date">Expiry Date <i class="fas fa-question-circle" data-toggle="tooltip" title="The date your credit card expires, typically on the front of the card."></i></label>
+												<div class="input-group">
+													<div class="input-group-prepend">
+												    <span class="input-group-text" id=""><i class="fas fa-calendar"></i></span>
+												  </div>
+													<input type="text" name="expiry" class="form-control form-control-lg required" id="Card_Expiry_Date" placeholder="MM / YYYY">
+													<div class="invalid-tooltip">
+														Please enter your card expiry date.
+													</div>
+												</div>
+											</div>
+											<div class="col-md-6 mb-3">
+												<label for="Card_Security_Code">Security Code <i class="fas fa-question-circle" data-toggle="tooltip" title="The 3 digit (back) or 4 digit (front) value on your card."></i></label>
+												<div class="input-group">
+													<div class="input-group-prepend">
+												    <span class="input-group-text" id=""><i class="fas fa-lock"></i></span>
+												  </div>
+													<input type="text" name="cvc" class="form-control form-control-lg required" id="Card_Security_Code" placeholder="CVV/CVC">
+													<div class="invalid-tooltip">
+														Please enter your card security code (CVV/CVC).
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+              <div id="squareform" style="display:none;">
+                <div class="form-row">
+                  <div class="col-md-6 mb-3">
+                    <label for="Card_Number">Card Number <i class="fas fa-question-circle" data-toggle="tooltip" title="The (typically) 16 digits on the front of your credit card."></i></label>
+                      <div id="sq-card-number"></div>
+                    </div>
+                </div>
+                <div class="form-row">
+                  <div class="col-md-3 mb-3">
+                    <label for="Card_Security_Code">Security Code <i class="fas fa-question-circle" data-toggle="tooltip" title="The 3 digit (back) or 4 digit (front) value on your card."></i></label>
+                      <div id="sq-cvv"></div>
+                  </div>
+                  <div class="col-md-3 mb-3">
+                    <label for="Card_Expiry_Date">Expiry Date <i class="fas fa-question-circle" data-toggle="tooltip" title="The date your credit card expires, typically on the front of the card."></i></label>
+                      <div id="sq-expiration-date"></div>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="col-md-6 mb-3">
+                    <label for="Postal_Code">Postal Code <i class="fas fa-question-circle" data-toggle="tooltip" title="Enter your postal code."></i></label>
+                      <div id="sq-postal-code"></div>
+                    </div>
+                </div>
+              </div>
+
+<?php } ?>
+								<div id="btn-row" class="form-row">
+                                           <div class="col-md-4 col-sm-6">
+                                             <div class="form-group">
+                                               <div class="input-group">
+                                                 <div class="input-group-prepend">
+                                                   <span class="input-group-text" id="AmountPrepend"><b>Total:</b></span>
+                                                 </div>
+                                                 <input type="text" class="form-control form-control-lg text-right amount" value="$0.00" style="font-weight:bold;" disabled>
+                                                 <div class="input-group-append recurring" style="display:none;">
+                                                   <span class="input-group-text" id="recurringfreq"></span>
+                                                 </div>
+                                               </div>
+                                             </div>
+                                           </div>
+									<div class="col-md-4 col-sm-6">
+										<div class="form-group">
+
+                                  <div id="paypal-button-container" hidden></div>
+                                  <?php if(TEST_EMAIL){ ?>
+                                     <button id="btn-submit-id" class="btn btn-lg btn-primary btn-lg btn-submit" type="submit" name="method"><i class="fas fa-envelope"></i> Send Test Email</button>
+                                 <?php }else{ ?>
+                                   <button id="btn-submit-id" class="btn btn-lg btn-primary btn-lg btn-submit" type="submit" name="method"><i class="fas fa-lock"></i> <?=$btn_text;?> Now</button>
+                                <?php } ?>
+                              </div>
+									</div>
+								</div>
+              </div>
+
+
+          <input type="hidden" id="card-nonce" name="nonce">
+				</fieldset>
+			</form>
+		</div>
+
+    <?php if ($gateways['paypal']): ?>
+      <script src="https://www.paypalobjects.com/api/checkout.js"></script>
+    <?php endif; ?>
+		<script src="payment-assets/js/jquery-3.3.1.min.js"></script>
+    <?php if ($gateways['authorize'] || $gateways['payeezy']): ?>
+		    <script src="payment-assets/js/jquery.card.js"></script>
+    <?php endif; ?>
+		<script src="payment-assets/js/popper.min.js"></script>
+		<script src="payment-assets/js/bootstrap.min.js"></script>
+    <?php if ($gateways['stripe']): ?>
+    <script src="https://checkout.stripe.com/checkout.js"></script>
+    <?php endif; ?>
+    <?php if ($gateways['square']): ?>
+    <script src="https://js.squareup.com/v2/paymentform"></script>
+    <?php endif; ?>
+		<script type="text/javascript">
+			$(document).ready(function(){
+
+        $(document).on('click','input[name="Fried_Pork"]',function(){
+          $('input[name="Griot"]').prop('checked', false);
+        });
+        $(document).on('click','input[name="Griot"]',function(){
+          $('input[name="Fried_Pork"]').prop('checked', false);
+        });
+        $(document).on('click','#Oxtail_3',function(){
+          $('input[name="Griot"]').prop('checked', false);
+          $('input[name="Fried_Pork"]').prop('checked', false);
+
+        });
+
+
+                // function that shows/hides the rice option when the the button is clicked
+                //oxtail
+                $(".Oxtail_Rice_Options_Con").hide();
+                //  $("[name='Cancel_con_Oxtail']").hide();
+                // $(".Oxtail_Options").click(function(){
+                //     $(".Oxtail_Rice_Options_Con").show(1000);
+                //     $("[name='Cancel_con_Oxtail']").show(1000);
+                //   });
+                  $("[id='Oxtail_3']").click(function(){
+                      $("[name='Cancel_con_Oxtail']").hide(1000);
+                      $(".Oxtail_Rice_Options_Con").hide(1000);
+                      document.getElementById("Option_Deselector_Oxtail").checked = true;
+                    });
+
+                    $("[id='Oxtail_3']").click(function(){
+                        $("[name='Cancel_con_Oxtail']").hide(1000);
+                        $(".Oxtail_Rice_Options_Con").hide(1000);
+                        document.getElementById("Option_Deselector_Oxtail").checked = true;
+                      });
+                //Fried Turkey
+                    $(".Fried_Turkey_Rice_Options_Con").hide();
+                 $("[name='Cancel_con_Fried_Turkey']").hide();
+                  $(".friedturkey_Options").click(function(){
+                    $(".Fried_Turkey_Rice_Options_Con").show(1000);
+                    $("[name='Cancel_con_Fried_Turkey']").show(1000);
+                  });
+                  $("[id='fried_3']").click(function(){
+                      $("[name='Cancel_con_Fried_Turkey']").hide(1000);
+                      $(".Fried_Turkey_Rice_Options_Con").hide(1000);
+                      document.getElementById("Option_Deselector_Fried_Turkey").checked = true;
+                    });
+                //POUL FRI (FRIED CHICKEN)
+                    $(".POUL_FRI_Rice_Options_Con").hide();
+                     $("[name='Cancel_con_POUL_FRI']").hide();
+                    $(".POUL_FRI_Options").click(function(){
+                        $(".POUL_FRI_Rice_Options_Con").show(1000);
+                        $("[name='Cancel_con_POUL_FRI']").show(1000);
+
+                      });
+                      $("[id='POUL_FRI_(FRIED_CHICKEN)3']").click(function(){
+                          $("[name='Cancel_con_POUL_FRI']").hide(1000);
+                          $(".POUL_FRI_Rice_Options_Con").hide(1000);
+                          document.getElementById("Option_Deselector_POUL_FRI").checked = true;
+                        });
+                //POUL AU SOS
+                $(".POUL_AU_OS_Rice_Options_Con").hide();
+                     $("[name='Cancel_con_POUL_AU_OS']").hide();
+                    $(".POUL_AU_OS_Options").click(function(){
+                        $(".POUL_AU_OS_Rice_Options_Con").show(1000);
+                        $("[name='Cancel_con_POUL_AU_OS']").show(1000);
+
+                      });
+                      $("[id='Cancel_Button_3']").click(function(){
+                          $("[name='Cancel_con_POUL_AU_OS']").hide(1000);
+                          $(".POUL_AU_OS_Rice_Options_Con").hide(1000);
+                          document.getElementById("Option_Deselector_POUL_AU_OS").checked = true;
+                        });
+                //Curry CHICKEN
+                $(".CURRY_CHICKEN_Rice_Options_Con").hide();
+                     $("[name='Cancel_con_CURRY_CHICKEN']").hide();
+                    $(".CURRY_CHICKEN_Options").click(function(){
+                        $(".CURRY_CHICKEN_Rice_Options_Con").show(1000);
+                        $("[name='Cancel_con_CURRY_CHICKEN']").show(1000);
+
+                      });
+                      $("[id='Cancel_Button_4']").click(function(){
+                          $("[name='Cancel_con_CURRY_CHICKEN']").hide(1000);
+                          $(".CURRY_CHICKEN_Rice_Options_Con").hide(1000);
+                          document.getElementById("Option_Deselector_CURRY_CHICKEN").checked = true;
+                        });
+                //Stew Vegetable
+                $(".Stew_Vegetable_Rice_Options_Con").hide();
+                     $("[name='Cancel_con_Stew_Vegetable']").hide();
+                    $(".Stew_Vegetable_Options").click(function(){
+                        $(".Stew_Vegetable_Rice_Options_Con").show(1000);
+                        $("[name='Cancel_con_Stew_Vegetable']").show(1000);
+
+                      });
+                      $("[id='Cancel_Button_11']").click(function(){
+                          $("[name='Cancel_con_Stew_Vegetable']").hide(1000);
+                          $(".Stew_Vegetable_Rice_Options_Con").hide(1000);
+                          document.getElementById("Option_Deselector_CURRY_CHICKEN").checked = true;
+                        });
+                //Curry GOAT
+                $(".CURRY_GOAT_Rice_Options_Con").hide();
+                     $("[name='Cancel_con_CURRY_GOAT']").hide();
+                    $(".CURRY_GOAT_Options").click(function(){
+                        $(".CURRY_GOAT_Rice_Options_Con").show(1000);
+                        $("[name='Cancel_con_CURRY_GOAT']").show(1000);
+
+                      });
+                      $("[id='Cancel_Button_5']").click(function(){
+                          $("[name='Cancel_con_CURRY_GOAT']").hide(1000);
+                          $(".CURRY_GOAT_Rice_Options_Con").hide(1000);
+                          document.getElementById("Option_Deselector_CURRY_GOAT").checked = true;
+                        });
+                //GRIOT Fried CHICKEN
+                $(".GRIOT_FRIED_PORK_Rice_Options_Con").hide();
+                     $("[name='Cancel_con_GRIOT_FRIED_PORK']").hide();
+                    $(".GRIOT_FRIED_PORK_Options").click(function(){
+                        $(".GRIOT_FRIED_PORK_Rice_Options_Con").show(1000);
+                        $("[name='Cancel_con_GRIOT_FRIED_PORK']").show(1000);
+
+                      });
+                      $("[id='Cancel_Button_6']").click(function(){
+                          $("[name='Cancel_con_GRIOT_FRIED_PORK']").hide(1000);
+                          $(".GRIOT_FRIED_PORK_Rice_Options_Con").hide(1000);
+                          document.getElementById("Option_Deselector_GRIOT_FRIED_PORK").checked = true;
+                        });
+                //Poison au Sauce
+                $(".POISSON_AU_SAUCE_Rice_Options_Con").hide();
+                     $("[name='Cancel_con_POISSON_AU_SAUCE']").hide();
+                    $(".POISSON_AU_SAUCE_Options").click(function(){
+                        $(".POISSON_AU_SAUCE_Rice_Options_Con").show(1000);
+                        $("[name='Cancel_con_POISSON_AU_SAUCE']").show(1000);
+
+                      });
+                      $("[id='Cancel_Button_7']").click(function(){
+                          $("[name='Cancel_con_POISSON_AU_SAUCE']").hide(1000);
+                          $(".POISSON_AU_SAUCE_Rice_Options_Con").hide(1000);
+                          document.getElementById("Option_Deselector_POISSON_AU_SAUCE").checked = true;
+                        });
+                //LEGUME
+                $(".LEGUME_Rice_Options_Con").hide();
+                     $("[name='Cancel_con_LEGUME']").hide();
+                    $(".LEGUME_Options").click(function(){
+                        $(".LEGUME_Rice_Options_Con").show(1000);
+                        $("[name='Cancel_con_LEGUME']").show(1000);
+
+                      });
+                      $("[id='Cancel_Button_8']").click(function(){
+                          $("[name='Cancel_con_LEGUME']").hide(1000);
+                          $(".LEGUME_Rice_Options_Con").hide(1000);
+                          document.getElementById("Option_Deselector_LEGUME").checked = true;
+                        });
+                //Tasso de CHEVRE
+                $(".TASSO_DE_CHEVRE_Rice_Options_Con").hide();
+                     $("[name='Cancel_con_TASSO_DE_CHEVRE']").hide();
+                    $(".TASSO_DE_CHEVRE_Options").click(function(){
+                        $(".TASSO_DE_CHEVRE_Rice_Options_Con").show(1000);
+                        $("[name='Cancel_con_TASSO_DE_CHEVRE']").show(1000);
+
+                      });
+                      $("[id='Cancel_Button_9']").click(function(){
+                          $("[name='Cancel_con_TASSO_DE_CHEVRE']").hide(1000);
+                          $(".TASSO_DE_CHEVRE_Rice_Options_Con").hide(1000);
+                          document.getElementById("Option_Deselector_TASSO_DE_CHEVRE").checked = true;
+                        });
+                //LEGUME/ STEAM VEGETABLE WITH MEAT
+                $(".Legum_Steam_Vegetable_with_Meat_Rice_Options_Con").hide();
+                     $("[name='Cancel_con_Legum_Steam_Vegetable_with_Meat']").hide();
+                    $(".Legum_Steam_Vegetable_with_Meat_Options").click(function(){
+                        $(".Legum_Steam_Vegetable_with_Meat_Rice_Options_Con").show(1000);
+                        $("[name='Cancel_con_Legum_Steam_Vegetable_with_Meat']").show(1000);
+
+                      });
+                      $("[id='Legum_Steam_Vegetable_with_Meat_3']").click(function(){
+                          $("[name='Cancel_con_Legum_Steam_Vegetable_with_Meat']").hide(1000);
+                          $(".Legum_Steam_Vegetable_with_Meat_Rice_Options_Con").hide(1000);
+                          document.getElementById("Option_Deselector_Legum_Steam_Vegetable_with_Meat").checked = true;
+                        });
+                //LAMBI/CONCH
+                $(".Lambi_Conch_Rice_Options_Con").hide();
+                     $("[name='Cancel_con_Lambi_Conch']").hide();
+                    $(".Lambi_Conch_Options").click(function(){
+                        $(".Lambi_Conch_Rice_Options_Con").show(1000);
+                        $("[name='Cancel_con_Lambi_Conch']").show(1000);
+
+                      });
+                      $("[id='Lambi_Conch_3']").click(function(){
+                          $("[name='Cancel_con_Lambi_Conch']").hide(1000);
+                          $(".Lambi_Conch_Rice_Options_Con").hide(1000);
+                          document.getElementById("Option_Deselector_Lambi_Conch").checked = true;
+                        });
+                //Jerk Chicken
+                $(".Jerk_Chicken_Rice_Options_Con").hide();
+                     $("[name='Cancel_con_Jerk_Chicken']").hide();
+                    $(".Jerk_Chicken_Options").click(function(){
+                        $(".Jerk_Chicken_Rice_Options_Con").show(1000);
+                        $("[name='Cancel_con_Jerk_Chicken']").show(1000);
+
+                      });
+                      $("[id='Jerk_Chicken_3']").click(function(){
+                          $("[name='Cancel_con_Jerk_Chicken']").hide(1000);
+                          $(".Jerk_Chicken_Rice_Options_Con").hide(1000);
+                          document.getElementById("Option_Deselector_Jerk_Chicken").checked = true;
+                        });
+
+                         //Bouyon_and_the_Soup_Joumou
+                $(".Bouyon_and_the_Soup_Joumou_Rice_Options_Con").hide();
+                     $("[name='Cancel_con_Bouyon_and_the_Soup_Joumou']").hide();
+                    $(".Bouyon_and_the_Soup_Joumou_Options").click(function(){
+                        $(".Bouyon_and_the_Soup_Joumou_Rice_Options_Con").show(1000);
+                        $("[name='Cancel_con_Bouyon_and_the_Soup_Joumou']").show(1000);
+
+                      });
+                      $("[id='Bouyon_and_the_Soup_Joumou_3']").click(function(){
+                          $("[name='Cancel_con_Bouyon_and_the_Soup_Joumou']").hide(1000);
+                          $(".Bouyon_and_the_Soup_Joumou_Rice_Options_Con").hide(1000);
+                          document.getElementById("Option_Deselector_Bouyon_and_the_Soup_Joumou").checked = true;
+                        });
+
+                 //Fritay Lakay Choices
+                 $(".FRITAY_LAKAY_Options_Con").hide();
+                 $(".FRITAY_LAKAY_Options").click(function(){
+                    $(".FRITAY_LAKAY_Options_Con").show(1000);
+                 });
+
+                 $("[name='Cancel_TASSO_DE_CHEVRE']").hide();
+                 $(".TASSO_DE_CHEVRE_Option").click(function(){
+                    $("[name='Cancel_TASSO_DE_CHEVRE']").show(1000);
+                 });
+
+                 $("[name='Cancel_TASSO_DE_CHEVRE']").click(function(){
+                    $("[name='Cancel_TASSO_DE_CHEVRE']").hide();
+                 });
+
+                 $("[name='Cancel_GRIOT_FRIED_PORK']").hide();
+                 $(".GRIOT_FRIED_PORK_Option").click(function(){
+                    $("[name='Cancel_GRIOT_FRIED_PORK']").show(1000);
+                 });
+
+                 $("[name='Cancel_GRIOT_FRIED_PORK']").click(function(){
+                    $("[name='Cancel_GRIOT_FRIED_PORK']").hide();
+                 });
+
+
+                 //bouyon
+                //  $("[name='Cancel_con_BOUYON_(HAITIAN BOUILLON)']").hide();
+                //  $(".BOUYON_(HAITIAN BOUILLON)_Options").click(function(){
+                //     $("[name='Cancel_con_BOUYON_(HAITIAN BOUILLON)']").show(1000);
+                //  });
+
+                //  $("[name='Cancel_con_BOUYON_(HAITIAN BOUILLON)']").click(function(){
+                //     $("[name='Cancel_con_BOUYON_(HAITIAN BOUILLON)']").hide();
+                //  });
+
+                //hidden cancel buttons
+
+                $("[name='Cancel_con_FRITAY']").hide();
+                $(".FRITAY_LAKAY_Options").click(function(){
+                    $("[name='Cancel_con_FRITAY']").show(1000);
+                });
+                $("[id='Cancel_Button_10']").click(function(){
+                    $("[name='Cancel_con_FRITAY']").hide(1000);
+                    $(".FRITAY_LAKAY_Options_Con").hide();
+                    // reset meat selection on cancel
+                    $('.FRITAY_LAKAY_Meat_Type').each(function(){$(this).prop('checked',false)});
+                });
+
+
+
+
+                $("[name='Cancel_con_PLAINTAINS']").hide();
+                $(".PLAINTAINS_Options").click(function(){
+                    $("[name='Cancel_con_PLAINTAINS']").show(1000);
+                });
+                $("[id='PLAINTAINS_(REGULAR_OR_SWEET)_3']").click(function(){
+                    $("[name='Cancel_con_PLAINTAINS']").hide(1000);
+                });
+
+                $("[name='Cancel_con_PATTIES']").hide();
+                $(".PATTIES_Options").click(function(){
+                    $("[name='Cancel_con_PATTIES']").show(1000);
+                });
+                $("[id='PATTIES_(HAITIAN_STYLE)_5']").click(function(){
+                    $("[name='Cancel_con_PATTIES']").hide(1000);
+                });
+
+                $("[name='Cancel_con_Fried_Goat']").hide();
+                $(".Fried_Goat_Options").click(function(){
+                    $("[name='Cancel_con_Fried_Goat']").show(1000);
+                });
+                $("[id='Fried_Goat_3']").click(function(){
+                    $("[name='Cancel_con_Fried_Goat']").hide(1000);
+                });
+
+                $("[name='Cancel_con_Two_drums_with_plantains_or_French_fries']").hide();
+                $(".Two_drums_with_plantains_or_French_fries_Options").click(function(){
+                    $("[name='Cancel_con_Two_drums_with_plantains_or_French_fries']").show(1000);
+                });
+                $("[id='Two_drums_with_plantains_or_French_fries_3']").click(function(){
+                    $("[name='Cancel_con_Two_drums_with_plantains_or_French_fries']").hide(1000);
+                });
+                $("[name='Cancel_con_Kenol_Special']").hide();
+                $(".Kenol_Special_Options").click(function(){
+                    $("[name='Cancel_con_Kenol_Special']").show(1000);
+                });
+                $("[id='Kenol_Special_3']").click(function(){
+                    $("[name='Cancel_con_Kenol_Special']").hide(1000);
+                });
+
+// ===================================================================================================================================================
+         $('#form_recaptcha .recaptcha-checkbox-checkmark').addClass('required');
+
+
+        var amount = 0;
+        $('input:checkbox, input:radio').change(function (){
+          var total = 0;
+            $('input:checkbox:checked, input:radio:checked').each(function(){
+              total += isNaN(parseFloat($(this).val())) ? 0 : parseFloat($(this).val());
+
+            });
+            amount = total;
+            $('input[name="Amount"]').val(parseFloat(amount).toFixed(2));
+              <?php if(!TEST_EMAIL): ?>
+            $('.btn-submit').html('<i class="fas fa-lock"></i> <?=$btn_text; ?> $'+parseFloat(amount).toFixed(2));
+              <?php endif; ?>
+            $('.amount').val('$'+parseFloat(amount).toFixed(2));
+        });
+        // $('input:radio').change(function (){
+        //   var total2 = 0;
+        //     $('input:radio:checked').each(function(){
+        //       total2 += isNaN(parseFloat($(this).val())) ? 0 : parseFloat($(this).val());
+        //     });
+        //     amount = total2;
+        //     $('input[name="Amount"]').val(parseFloat(amount).toFixed(2));
+        //       <?php if(!TEST_EMAIL): ?>
+        //     $('.btn-submit').html('<i class="fas fa-lock"></i> <?=$btn_text; ?> $'+amount);
+        //       <?php endif; ?>
+        //     $('.amount').val('$'+parseFloat(amount).toFixed(2));
+        // });
+
+        $('[data-toggle="tooltip"]').tooltip();
+
+        <?php if(!empty($payments)): ?>
+          $('select[name="Payment_For"]').on('change', function(){
+            var amt = $(this).find('option:selected').data('amount');
+            $('#amounttooltip').attr('data-original-title','Enter amount here').hide();
+            $('input[name="Amount"]').attr('min','0.01').removeAttr('max');
+            if(amt==''){
+              $('#Amount').prop('readonly', false);
+              $('#amounttooltip').show();
+              setTimeout(function(){ $('input[name="Amount"]').focus().select(); }, 0);
+            }else if(amt.indexOf('|') != -1){
+              $('#Amount').prop('readonly', false);
+              var minmax = amt.split('|');
+              $('#amounttooltip').attr('data-original-title','Enter amount between $'+minmax[0]+' and $'+minmax[1]).show();
+              $('input[name="Amount"]').attr('min',minmax[0]).attr('max',minmax[1]);
+              setTimeout(function(){ $('input[name="Amount"]').focus().select(); }, 0);
+            }else {
+              $('#Amount').prop('readonly', true);
+            }
+            setamount(amt);
+          });
+        <?php endif; ?>
+        <?php if ($gateways['authorize'] || $gateways['payeezy']): ?>
+        document.getElementsByName('number')[0].addEventListener('payment.cardType', function(e) {
+          var card_type;
+          switch (e.detail) {
+            case 'amex':
+              card_type = 'A';
+              break;
+            case 'mastercard':
+              card_type = 'M';
+              break;
+            case 'visa':
+              card_type = 'V';
+              break;
+            case 'discover':
+              card_type = 'D';
+              break;
+            default:
+              card_type = '';
+          }
+          $('input[name="type"]').val(card_type);
+        });
+        $('#creditcard input').prop('disabled',true);
+				$('form').card({
+          width: 320,
+					form: 'form',
+					container: '.card-wrapper',
+					formSelectors: {
+					   nameInput: 'input[name="fname"], input[name="lname"]'
+					},
+					placeholders: {
+							number: '•••• •••• •••• ••••',
+							name: 'Name on Card',
+							expiry: '••/••••',
+							cvc: '•••'
+					}
+					});
+        <?php endif; ?>
+        <?php if ($gateways['square']): ?>
+        var paymentForm = new SqPaymentForm({
+          applicationId: "<?= SQUARE_APPLICATION_ID; ?>",
+          locationId: "<?= SQUARE_LOCATION_ID; ?>",
+          inputClass: 'sq-input',
+          autoBuild: false,
+          inputStyles: [{
+            fontSize: '18px',
+            fontFamily: 'Arial',
+            padding: '15px',
+            color: '#373F4A',
+            lineHeight: '24px',
+            placeholderColor: '#BDBFBF'
+          }],
+
+          cardNumber: {
+            elementId: 'sq-card-number',
+            placeholder: '•••• •••• •••• ••••'
+          },
+          cvv: {
+            elementId: 'sq-cvv',
+            placeholder: 'CVV'
+          },
+          expirationDate: {
+            elementId: 'sq-expiration-date',
+            placeholder: 'MM/YY'
+          },
+          postalCode: {
+            elementId: 'sq-postal-code'
+          },
+          callbacks: {
+            cardNonceResponseReceived: function(errors, nonce, cardData, billingContact, shippingContact) {
+              if (errors) {
+                // Log errors from nonce generation to the Javascript console
+                var errorlist = '<b>Error(s):</b><br>';
+                errors.forEach(function(error) {
+                  errorlist += error.message+'<br>';
+                });
+                $('#alert').removeClass().attr('hidden', false).addClass('alert alert-danger').show();
+                $('#alert p').html('<b><i class="fas fa-exclamation-triangle"></i></b> '+errorlist);
+
+                return;
+              }
+              $('#paymentform').prepend('<input type="hidden" name="square_token" value="'+nonce+'" />');
+              getajax();
+              $('input[name="square_token"]').remove();
+
+            },
+            paymentFormLoaded: function() {
+
+            }
+          }
+        });
+        function squarehandler() {
+          paymentForm.requestCardNonce();
+        }
+        <?php endif; ?>
+        <?php if(TEST_EMAIL): ?>
+            	$('#btn-row').fadeIn();
+       <?php endif; ?>
+				<?php	if($gcount == 1): ?>
+					setgateway('<?=$gatewayname[0];?>');
+				<?php	endif; ?>
+        <?php	if($gcount > 1): ?>
+				$('input[name="gateway"]').on('change',function(){
+					var gateway = $(this).val();
+					setgateway(gateway);
+				});
+        <?php	endif; ?>
+        function setgateway(gateway){
+					if(gateway=='paypal'){
+            $('#paypal-button-container').prop('hidden',false);
+            $('#squareform').fadeOut();
+            $('.btn-submit').hide();
+						$('#creditcard').fadeOut();
+						$('#creditcard input').prop('disabled',true);
+					}else if(gateway=='authorize' || gateway=='payeezy'){
+            $('#squareform').fadeOut();
+            $('#paypal-button-container').prop('hidden',true);
+            $('.btn-submit').show();
+						$('#creditcard').fadeIn();
+						$('#creditcard input').prop('disabled',false);
+					}else if(gateway=='stripe'){
+            $('#squareform').fadeOut();
+            $('#paypal-button-container').prop('hidden',true);
+            $('.btn-submit').show();
+						$('#creditcard').fadeOut();
+						$('#creditcard input').prop('disabled',true);
+          }else if(gateway=='square'){
+            $('#paypal-button-container').prop('hidden',true);
+            $('#squareform').fadeIn();
+            $('.btn-submit').show();
+            $('#creditcard').fadeOut();
+            $('#creditcard input').prop('disabled',true);
+            if(!$('.sq-input')[0]){
+              paymentForm.build();
+            }
+          }else{
+            $('#paypal-button-container').prop('hidden',true);
+            $('#squareform').fadeOut();
+            $('.btn-submit').show();
+						$('#creditcard').fadeOut();
+						$('#creditcard input').prop('disabled',true);
+					}
+					$('.btn-submit').val(gateway);
+					$('#btn-row').fadeIn();
+				}
+        <?php if(DONATION && RECURRING): ?>
+        $('input[name="Recurring"]').on('change',function(){
+					if($(this).is(':checked')){
+              $('.recurring').show();
+              $('#recurringfreq').html('<b>'+$('select[name="Recurring_Frequency"]').find('option:selected').text()+'</b>');
+              $('select[name="Recurring_Frequency"]').prop('disabled',false);
+          }else {
+            $('select[name="Recurring_Frequency"]').prop('disabled',true);
+            $('.recurring').hide();
+          }
+				});
+        $('select[name="Recurring_Frequency"]').on('change',function(){
+          $('#recurringfreq').html('<b>'+$(this).find('option:selected').text()+'</b>');
+				});
+        <?php endif; ?>
+
+        <?php if(DONATION && !empty($donation_amounts)): ?>
+  				$('input[name="payment"]').on('change', function(){
+  					var amount = $('input[name="payment"]:checked').val();
+  					if(amount!='Other'){
+              setamount(amount);
+  					}else {
+  						setTimeout(function(){ $('input[name="Amount"]').focus().select(); }, 0);
+  					}
+  				});
+          <?php endif; ?>
+
+				$('input[name="Amount"]').on('change', function(){
+					// if($(this).val()){
+						setamount($(this).val());
+						<?php if(DONATION): ?>
+						$('input[name="payment"][value="Other"]').trigger('click');
+						<?php endif; ?>
+					// }
+				});
+
+        function setamount(num){
+          if(num=='')
+            amount = 0;
+          else if(num.indexOf("|") >= 0)
+            amount = num.split('|')[0];
+          else
+            amount = num;
+          $('input[name="Amount"]').val(parseFloat(amount).toFixed(2));
+          <?php if(!TEST_EMAIL): ?>
+             $('.btn-submit').html('<i class="fas fa-lock"></i> <?=$btn_text; ?> $'+amount);
+         <?php endif; ?>
+             $('.amount').val('$'+parseFloat(amount).toFixed(2));
+
+        }
+
+        function showsuccess(trans){
+          $('#coverpage').html('<div class="successpage col-md-12 text-center"><div class="mt-4"><i class="fas fa-check-circle fa-9x text-success" ></i><h2>Your transaction with the amount of $'+amount+' was completed successfully</h2><?php if(!TEST_EMAIL): ?><h3 class="mb-5">Transaction ID: <b>'+trans+'</b></h3><?php endif; ?><p><a href="" class="btn btn-primary btn-lg">Go Back</a></p></div></div>');
+          $('#coverpage').fadeIn();
+        }
+
+        function getajax(){
+          var buttontext = $('.btn-submit').html();
+					$('.btn-submit').html('Please Wait <i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
+          var formdata = $('#paymentform').serialize();
+          $.ajax({
+            type: "POST",
+            url: "<?php (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]" ?>ajax-payment.php",
+            data: formdata,
+            success: function(result){
+              $('.btn-submit').html(buttontext).prop('disabled', false);
+              $('html,body').animate({scrollTop:0},500);
+							if(is_json(result)){
+                var obj = JSON.parse(result);
+                $('.required').attr('required', true);
+                $('#paymentform').addClass('was-validated');
+                $('#alert').removeClass().attr('hidden', false).addClass('alert alert-'+obj.status);
+					$('#alert p').html(obj.response);
+					if(obj.link){
+                        getlink(obj.link);
+                    }
+                if(obj.status == 'success'){
+                  showsuccess(obj.link);
+                }
+              }else {
+                $('#alert').removeClass().attr('hidden', false).addClass('alert alert-warning');
+                $('#alert p').html(result);
+              }
+			    },
+            error: function(xhr){
+              $('.btn-submit').html(buttontext).prop('disabled', false);
+              $('html,body').animate({scrollTop:0},500);
+              $('#alert').removeClass().attr('hidden', false).addClass('alert alert-danger');
+              $('#alert p').html('<b>Error: </b> No response from the server.');
+            }
+          });
+        }
+
+        function getlink(link){
+          if($('.btn-submit').val() == 'stripe' && link == 'token'){
+              stripehandler();
+          }else if ($('.btn-submit').val() == 'square' && link == 'token') {
+            squarehandler();
+          }
+        }
+        $('#paymentform').on('submit', function(e){
+    	    e.preventDefault();
+            getajax();
+    	});
+
+        function is_json(variable){
+          var IS_JSON = true;
+           try
+           {
+              var obj = JSON.parse(variable);
+           }
+           catch(err)
+           {
+              IS_JSON = false;
+           }
+           return IS_JSON;
+        }
+
+        function getFormData($form){
+          var unindexed_array = $form.serializeArray();
+          var indexed_array = {};
+
+          $.map(unindexed_array, function(n, i){
+              indexed_array[n['name']] = n['value'];
+          });
+
+          return indexed_array;
+        }
+
+
+    <?php if ($gateways['paypal']): ?>
+        paypal.Button.render({
+            env: '<?= (TEST_MODE)?'sandbox':'production' ?>',
+            commit: true,
+            style: {
+              // label: 'pay',
+              size:  'responsive', // small | medium | large | responsive
+              shape: 'rect',   // pill | rect
+              color: 'gold',   // gold | blue | silver | black
+              layout: 'vertical',
+              // fundingicons: 'true'
+            },
+            funding: {
+              allowed: [ paypal.FUNDING.CARD  ],
+              disallowed: [ paypal.FUNDING.CREDIT ]
+            },
+            payment: function(data, actions) {
+              // return actions;
+                // Set up a url on your server to create the payment
+                var CREATE_URL = "<?php (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]" ?>ajax-payment.php?paypal=direct";
+                // Make a call to your server to set up the payment
+                 var formdata = getFormData($('#paymentform'));
+                   return paypal.request({method:'post',url:CREATE_URL, data: formdata}).then(function(obj) {
+                     $('html,body').animate({scrollTop:0},500);
+      							if(obj.status!= undefined){
+                      if(obj){
+        								$('#alert').removeClass().attr('hidden', false).addClass('alert alert-'+obj.status);
+        								$('#alert p').html(obj.response);
+        								if(obj.validate){
+        									$('.required').attr('required', true);
+        									$('#paymentform').addClass('was-validated');
+        								}
+        								if(obj.link){
+        									return obj.link;
+        								}
+                        try{
+                          return false
+                        }catch(err){
+                          console.log(err);
+                        }
+
+        							}
+                    }else {
+                      $('#alert').removeClass().attr('hidden', false).addClass('alert alert-warning');
+                      $('#alert p').html(obj);
+                    }
+                });
+            },
+            // onAuthorize() is called when the buyer approves the payment
+            onAuthorize: function(data, actions) {
+                // Set up a url on your server to execute the payment
+                var EXECUTE_URL = "<?php (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]" ?>ajax-payment.php?paypal=return";
+                // Set up the data you need to pass to your server
+                var data = {
+                    paymentID: data.paymentToken,
+                    payerID: data.payerID,
+                    gateway: 'paypal'
+                };
+                // Make a call to your server to execute the payment
+                return paypal.request.post(EXECUTE_URL, data)
+                    .then(function (obj) {
+                      $('html,body').animate({scrollTop:0},500);
+                         if(obj.status!= undefined){
+                           if(obj){
+                             $('#alert').removeClass().attr('hidden', false).addClass('alert alert-'+obj.status).show();
+                             $('#alert p').html(obj.response);
+                             if(obj.validate){
+                               $('.required').attr('required', true);
+                               $('#paymentform').addClass('was-validated');
+                             }
+                             if(obj.status == 'success'){
+                               showsuccess(obj.link);
+                             }
+                             if(obj.link){
+                               return obj.link;
+                             }
+                             return false;
+                           }
+                         }else {
+                           $('#alert').removeClass().attr('hidden', false).addClass('alert alert-warning').show();
+                           $('#alert p').html(obj);
+                         }
+                    });
+            },
+            onCancel: function(){
+              $('#alert').removeClass().attr('hidden', false).addClass('alert alert-warning').show();
+              $('#alert p').html('<b><i class="fas fa-exclamation-triangle"></i></b> Payment has been cancelled.');
+            }
+        }, '#paypal-button-container');
+    <?php endif; ?>
+
+
+    <?php if ($gateways['stripe']): ?>
+    var token_triggered = false;
+    var handler = StripeCheckout.configure({
+      key: '<?= STRIPE_PUBLISHABLE_KEY; ?>',
+      // image: 'payment-assets/img/stripe.png',
+      token: function(token, args) {
+        token_triggered = token.id;
+        $('#paymentform').prepend('<input type="hidden" name="stripe_token" value="'+token_triggered+'" />');
+        getajax();
+        $('input[name="stripe_token"]').remove();
+      },
+      closed: function() {
+        if (token_triggered) {
+          $('#alert').removeClass().attr('hidden', false).addClass('alert alert-info').show();
+          $('#alert p').html('<b><i class="fas fa-spinner fa-spin"></i></b> Please Wait...');
+         } else {
+           $('#alert').removeClass().attr('hidden', false).addClass('alert alert-info').show();
+           $('#alert p').html('<b><i class="fas fa-exclamation-triangle"></i></b> Payment has been cancelled.');
+         }
+       }
+    });
+
+    $(window).on('popstate', function() {
+      handler.close();
+    });
+
+    function stripehandler(){
+      handler.open({
+        name: '<?= COMPANY_NAME; ?>',
+        description: '<?= FORM_NAME; ?>',
+        amount: amount * 100
+      });
+    }
+      <?php endif; ?>
+      $('#coverpage').fadeOut();
+});
+
+
+var wskCheckbox = function() {
+  var wskCheckboxes = [];
+  var SPACE_KEY = 32;
+
+  function animateCircle(checkboxElement) {
+    var circle =
+        checkboxElement.parentNode.getElementsByClassName('wskCircle')[0];
+    var restore = '';
+    if (circle.className.indexOf('flipColor') < 0) {
+      restore = circle.className + ' flipColor';
+    } else {
+      restore = 'wskCircle';
+    }
+    circle.className = restore  + ' show';
+    setTimeout(function(){
+      circle.className = restore;
+    }, 150);
+  }
+
+  function addEventHandler(elem, eventType, handler) {
+    if (elem.addEventListener) {
+      elem.addEventListener (eventType, handler, false);
+    }
+    else if (elem.attachEvent) {
+      elem.attachEvent ('on' + eventType, handler);
+    }
+  }
+
+  function clickHandler(e) {
+    e.stopPropagation();
+    if (this.className.indexOf('checked') < 0) {
+      this.className += ' checked';
+    } else {
+      this.className = 'wskCheckbox';
+    }
+    animateCircle(this);
+  }
+
+  function keyHandler(e) {
+    e.stopPropagation();
+    if (e.keyCode === SPACE_KEY) {
+      clickHandler.call(this, e);
+      // Also update the checkbox state.
+      var cbox = document.getElementById(this.parentNode.getAttribute('for'));
+      cbox.checked = !cbox.checked;
+    }
+  }
+
+  function clickHandlerLabel(e) {
+    var id = this.getAttribute('for');
+    var i = wskCheckboxes.length;
+    while (i--) {
+      if (wskCheckboxes[i].id === id) {
+        if (wskCheckboxes[i].checkbox.className.indexOf('checked') < 0) {
+          wskCheckboxes[i].checkbox.className += ' checked';
+        } else {
+          wskCheckboxes[i].checkbox.className = 'wskCheckbox';
+        }
+        animateCircle(wskCheckboxes[i].checkbox);
+        break;
+      }
+    }
+  }
+
+  function checkboxValues(inputAttrName) {
+		var inputAttrName = inputAttrName;
+		var inputHidden = $('input[name="'+inputAttrName+'"]').attr('value');
+		var checkedValues = '';
+		var checkboxClass = $('input.'+inputAttrName+'');
+
+		$.each(checkboxClass, function(index) {
+			$(this).on('change', function() {
+				var x = $(this).attr('value') + ', ';
+				if($(this).is(':checked')) {
+					inputHidden += x;
+					checkedValues = inputHidden.replace(/,\s*$/, "");
+					$('input[name="'+inputAttrName+'"]').attr('value', checkedValues);
+				} else {
+					inputHidden = inputHidden.replace(x, '');
+					checkedValues = inputHidden.replace(/,\s*$/, "");
+					$('input[name="'+inputAttrName+'"]').attr('value', checkedValues);
+				}
+			});
+		});
+	}
+
+  function findCheckBoxes() {
+    var labels =  document.getElementsByTagName('label');
+    var i = labels.length;
+    while (i--) {
+      var posCheckbox = document.getElementById(labels[i].getAttribute('for'));
+      if (posCheckbox !== null && posCheckbox.type === 'checkbox' &&
+          (posCheckbox.className.indexOf('wskCheckbox') >= 0)) {
+        var text = labels[i].innerText;
+        var span = document.createElement('span');
+        span.className = 'wskCheckbox';
+        span.tabIndex = i;
+        var span2 = document.createElement('span');
+        span2.className = 'wskCircle flipColor';
+        labels[i].insertBefore(span2, labels[i].firstChild);
+        labels[i].insertBefore(span, labels[i].firstChild);
+        addEventHandler(span, 'click', clickHandler);
+        addEventHandler(span, 'keyup', keyHandler);
+        addEventHandler(labels[i], 'click', clickHandlerLabel);
+        var cbox = document.getElementById(labels[i].getAttribute('for'));
+        if (cbox.getAttribute('checked') !== null) {
+          span.click();
+        }
+
+        wskCheckboxes.push({'checkbox': span,
+            'id': labels[i].getAttribute('for')});
+      }
+    }
+  }
+
+  return {
+    init: findCheckBoxes
+  };
+}();
+
+wskCheckbox.init();
+
+		</script>
+      <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
+	</body>
+</html>
+
+=====================================================================================================================================================
+
+//config-payment.php
+
+<?php
+/*
+* NOTE:
+* Payment Form
+* Version: 4.4.1
+* Modified: 2/12/19
+*/
+
+ini_set('display_errors', false);
+ini_set('display_startup_errors', false);
+error_reporting(E_ALL);
+
+////////////////////////////////////////////////////////
+define('TEST_MODE', false);
+define('COMPANY_NAME', 'Five Stars S Restaurant');
+define('FORM_NAME', 'Payment');
+
+define('DONATION', false);
+
+// test if e-mail functionality is working. If TEST_EMAIL = true, make sure $gateways are false
+define('TEST_EMAIL', false);
+
+
+if(DONATION){
+  define('RECURRING', true);
+  $donation_amounts = array(10,25,50,100,200);
+}elseif(TEST_EMAIL){
+   sendtestemail();
+}else {
+  $payments = array(
+    // 'SamplePayment' => '1.00',
+    // 'PaymentWithMinMax' => '2.00|5.00',
+    // 'PaymentWithGroup' => array(
+    //   'SampleInsideGroup1' => '10.00|100.00',
+    //   'SampleInsideGroup2' => '5.00',
+    //   'SampleInsideGroupOther' => ''
+    // ),
+    // 'Other' => ''
+  );
+}
+
+$gateways = array(
+  'paypal'    => false,
+  'authorize' => false,
+  'payeezy'   => false,
+  'stripe'    => true,
+  'square'    => false
+);
+
+$required = array('First_Name','Last_Name','Email');
+
+if(TEST_MODE){
+  //NOTE: PAYPAL
+  define("PAYPAL_USERNAME", "sp-facilitator_api1.proweaver.net");
+  define("PAYPAL_PASSWORD", "1399873650");
+  define("PAYPAL_SIGNATURE", "AiPC9BjkCyDFQXbSkoZcgqH3hpacA74rJq85b-pTFAHAZ.71hb30iH12");
+
+  //NOTE: AUTHORIZE.NET
+  define('AUTHORIZE_LOGINID','9r52BTU4dyJ');
+  define('AUTHORIZE_TKEY','83JU8Mjs7n2g8r4p');
+
+  //NOTE: PAYEEZY
+  define('PAYEEZY_GATEWAYID','PJ8599-42');
+  define('PAYEEZY_PASSWORD','NfuhB9IRbAkEdyN2uavBV5uH3TBviVaZ');
+  define('PAYEEZY_KEYID','557015');
+  define('PAYEEZY_HMACKEY','OHicnLnzcRcMTAdkhMv27KJVwYT8m3DO');
+
+  //NOTE: STRIPE
+  define('STRIPE_PUBLISHABLE_KEY','pk_test_Y2XsAOSNSABe2aOW2Y4s1B0x');
+  define('STRIPE_SECRET_KEY','sk_test_O2dUx2u1rnMoIEAbjo1fxhzJ');
+
+  //NOTE: SQUARE
+  define('SQUARE_APPLICATION_ID','sandbox-sq0idp-Cv-UCD-d58VKczDvd8PXog');
+  define('SQUARE_ACCESS_TOKEN','sandbox-sq0atb-s3f9nBf4GmWjTLcRoEm9aw');
+  define('SQUARE_LOCATION_ID','CBASEICWWAw5k2TCC_Ez-1bJueUgAQ');
+
+}else {
+
+  //NOTE: PAYPAL
+  define('PAYPAL_USERNAME','');
+  define('PAYPAL_PASSWORD','');
+  define('PAYPAL_SIGNATURE','');
+
+
+  //NOTE: AUTHORIZE.NET
+  define('AUTHORIZE_LOGINID','');
+  define('AUTHORIZE_TKEY','');
+
+  //NOTE: PAYEEZY
+  define('PAYEEZY_GATEWAYID','');
+  define('PAYEEZY_PASSWORD','');
+  define('PAYEEZY_KEYID','');
+  define('PAYEEZY_HMACKEY','');
+
+  //NOTE: STRIPE
+  define('STRIPE_PUBLISHABLE_KEY','pk_live_51K6RAOBHISrrPimpLregN90ma5EDNJPHJChBza80n1xkTGLV9dYhA6Ygupa1OJ8dyhb8rABEPMjHaXTzR8AE7yE0006c6NQsqi');
+  define('STRIPE_SECRET_KEY','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');
+
+  //NOTE: SQUARE
+  define('SQUARE_APPLICATION_ID','');
+  define('SQUARE_ACCESS_TOKEN','');
+  define('SQUARE_LOCATION_ID','');
+}
+
+=========================================================================================================================================================================
+
+//config.php
+
+<?php
+ini_set('display_errors', 'off');
+error_reporting(E_ALL);
+define('COMP_EMAIL', 'elabranche46@gmail.com'); // clients email
+
+define('SMTP_ENCRYPTION', 'off'); // TLS, SSL or off
+define('SMTP_PORT', 587); // SMPT port number 587 or default
+define('COMP_NAME', 'Five Stars S Restaurant'); // company name
+define('MAIL_TYPE', 2); // 1 - html, 2 - txt
+define('MAIL_DOMAIN', 'web.link2newsite.com/mems/fivestarsie595'); // company domain
+define('DEV_MODE',true); //if false = launched account , true = pages account
+
+// Update it using a working google Site key
+$recaptcha_sitekey = '6LeoXdwZAAAAAAOsa6EC54VCLJNnuz-TZXZhMMYc';
+// Update it using a working google Privite key
+$recaptcha_privite = '6LeoXdwZAAAAAMDRk3bhiW3D1V0OlyifEKZPlRGN';
+
+
+// do not edit
+$subject = COMP_NAME . " [" . $formname . "]";
+$template = 'template';
+$to_name = NULL;
+$from_email = 'onlineform@proweaver.net';
+$from_name = 'Message From Your Site';
+$attachments = array();
+
+// testing here
+$testform = false;
+if($testform){
+	// when using cc and/or bcc use string type to_email
+	// cc and/or bcc can contain string or array type data
+	// $to_email 	= 'qa@proweaver.net';
+	$to_email 	= array('webtestreceive@gmail.com');
+	$cc = '';
+	$bcc = '';
+
+	// when using multiple to_email use array type
+	// cc and/or bcc will not be worked
+	//$to_email 	= array('qa@proweaver.net', 'info@proweaver.com');
+}else{
+	// $to_email 	= array('elabranche46@gmail.com');
+	$to_email 	= array('elabranche46@gmail.com');
+	$cc = '';
+	$bcc = '';
+}
+
+==============================================================================================================================================================================
