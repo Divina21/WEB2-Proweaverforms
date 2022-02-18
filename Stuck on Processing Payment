@@ -1,0 +1,7 @@
+//Stuck on processing payment on PayPal
+
+- go to config.php (proweaverforms)
+//replace this line
+ $wpblogheader = search_file($_SERVER['DOCUMENT_ROOT'], 'wp-blog-header.php');
+//with this line
+$wpblogheader = $_SERVER['DOCUMENT_ROOT'].'wp-blog-header.php';
