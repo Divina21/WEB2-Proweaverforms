@@ -66,3 +66,43 @@ For Live mode:
 3. Change // if($status == 'TESTING') to if(send_email($parameter))
 
 ============================================================================================================================================================================
+Solution 4. (Proweaver plugin)
+
+1. go to /public_html/wp-content/plugins/proweaverforms/forms/functions.php
+
+  	// for email notification
+  	require_once 'config.php';
+	require_once 'send_email_curl.php';
+  	// save data form on database
+  	require_once 'savedb.php';
+
+  	// save data form on database
+  	$subject = ucwords(str_replace('_',' ',FORM_NAME));
+
+  	$attachments = array();
+
+  	$name = $data['First_Name'].' '.$data['Last_Name'];
+  	//name of sender
+  	$result = insertDB($name,$subject,$body,$attachments);
+
+	$parameter = array(
+		'body' => $body,
+   		'from' => !empty($from_email) ? $from_email : 'noreply@proweaversend.com', (kani kay sa prtool kung unsa gigamit nimo nga server from email maoy ibutang nganhe)
+		'from_name' => $from_name,
+		'to' => $to_email,
+		'subject' => 'New Message Notification',
+		'attachment' => $attachments
+	);
+	if(empty($attachments)){
+		unset($parameter['attachment']);
+	}
+
+	send_email($parameter);
+
+   	return $trans;
+}
+
+2. Go to WP admin Proweaverforms >  General > check SMTP
+3. Fill in from prtool smtp databank.
+4. Done.
+=================================================================================================================================================
