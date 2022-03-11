@@ -1,0 +1,22 @@
+// unsaon pag array ug pagtaway sa array sa <select> or dropdown. //
+//1. e declare
+$service_type = array('Regular','Deep Clean','Move-Out/Move In');
+
+//2. e loop
+              <div class="form-row">
+                <div class="col-md-6 mb-3">
+                  <label for="Service_Type">CHOOSE YOUR SERVICE TYPE</label>
+                  <div class="input-group">
+                    <select name="Service_Type" class="form-control form-control-sm required" id="Service_Type">
+                        <?php foreach ($service_type as $value): ?>
+                            <option value="<?php echo $value; ?>"><?php echo $value; ?></option>
+                        <?php endforeach; ?>
+                    </select/>
+                    <div class="invalid-tooltip">
+                      Please select a type of service
+                    </div>
+                  </div>
+                </div>
+               </div>
+ //3. Done          
+=============================================================================
