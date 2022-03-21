@@ -1,0 +1,53 @@
+Note: eneg ka choose niya sa naka dropdown kay mo gawas ang laen nga field.
+
+// array
+$catering = array('Yes', 'No');
+
+//html code
+                   <div class="col-md-6 mb-3">
+                     <label for="Catering">Do you need food catering?</label>
+                     <div class="input-group">
+                       <div class="input-group-prepend">
+                         <span class="input-group-text" id=""><i class="fas fa-question"></i></span>
+                       </div>
+                       <select class="form-control form-control-lg" name="catering" id="catering">
+                         <option value="" selected disabled> Please select yes or no </option>
+                         <?php foreach($catering as $val): ?>
+                         <option value="<?php echo $val ?>"> <?php echo $val; ?></option>
+                       <?php endforeach; ?>
+                       </select>
+                       <div class="invalid-tooltip"></div>
+                     </div>
+                   </div>
+                   
+//jquery code
+
+        // for catering code starts here
+        $(document).on('change','select[name="catering"]',function(){
+          var cater= $(this).val();
+          if(cater == 'Yes'){
+            var type = ``;
+              type += `
+
+                <div class="col-md-12 mb-3">
+                  <label for="No_of_People">How many people? </label>
+                  <div class="input-group">
+                    <input type="number" name="No_of_People" min='1' class="form-control form-control-lg required" id="No_of_People"" placeholder="Enter how many people">
+                  </div>
+                  </div>
+
+                  <div class="col-md-12 mb-3">
+                    <label for="Time">Menu </label>
+                    <div class="input-group">
+                      <span style="color:red;"> Menu Here... </span>
+                    </div>
+                    </div>
+
+          `;
+              $('#menu').append(type);
+          }else{
+              $('#menu').html('');
+          }
+
+        });
+        // for catering code ends here
