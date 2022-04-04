@@ -1,0 +1,96 @@
+Note:
+ kung naa kay item nga tagsa2 ug Pay Now button dayon kato rang specific item ang mugawas sa form.
+ Refer to this site: http://www.friendshipmobility.com/
+ 
+1. Sa Item na link.
+<tr>
+<td>(AO0) Ambulatory &amp; Seniors No Stops<br />Add Mileage: $1/mile, Over 15 miles one way: 1.25/mile; Wait Time at Pick : $6/15 min incr</td>
+<td>1hr<br />$20</td>
+<td><a href="[contenturl type='siteurl' page='non-emergency-medical-transportation-schedule-online?service=AO0']">Book Now</a></td>
+</tr>
+
+2. 
+if(isset($_GET['service'])){
+  switch ($_GET['service']) {
+    case 'AO0': // ONE WAY
+      $amount = 20;
+      $paymentFor = '(AO0) Ambulatory & Seniors No Stops';
+    break;
+    case 'AO1':
+      $amount = 26;
+      $paymentFor = '(AO1) Ambulatory & Seniors 1 Stop';
+    break;
+    case 'AO2':
+      $amount = 32;
+      $paymentFor = '(AO2) Ambulatory & Seniors 2 Stops';
+    break;
+    case 'WO0':
+      $amount = 35;
+      $paymentFor = '(WO0) Wheelchair Transport No Stops';
+    break;
+    case 'WO1':
+      $amount = 41;
+      $paymentFor = '(WO1) Wheelchair Transport 1 Stop';
+    break;
+    case 'WO2': 
+      $amount = 47;
+      $paymentFor = '(WO2) Wheelchair Transport 2 Stops';
+    break; // END ONE WAY
+    case 'AR0': // ROUND TRIP
+      $amount = 36;
+      $paymentFor = '(AR0) Ambulatory & Seniors No Stops';
+    break;
+    case 'AR1':
+      $amount = 42;
+      $paymentFor = '(AR1) Ambulatory & Seniors 1 Stop';
+    break;
+    case 'AR2':
+      $amount = 48;
+      $paymentFor = '(AR2) Ambulatory & Seniors 2 Stops';
+    break;
+    case 'WR0':
+      $amount = 66;
+      $paymentFor = '(WR0) Wheelchair Transport No stops';
+    break;
+    case 'WR1':
+      $amount = 72;
+      $paymentFor = '(WR1) Wheelchair Transport With 1 Stop';
+    break;
+    case 'WR2': 
+      $amount = 78;
+      $paymentFor = '(WR2) Wheelchair Transport With 2 Stops';
+    break; // END ROUND TRIP
+    default:
+      $amount = 20;
+      $paymentFor = '(AO0) Ambulatory & Seniors No Stops';
+      break;
+  }
+}else{
+  $amount = 20;
+  $paymentFor = '(AO0) Ambulatory & Seniors No Stops';
+}
+
+>> 
+<div class="form-row">
+                    <div class="col-md-8 col-sm-12 left-content">
+                      <div class="form-group mb-5">
+                        <div id="calendar"></div>
+                      </div>
+                      <div class="form-row text-center con_time"></div>
+                      <input type="hidden" name="Payment_For" class="form-control form-control-lg required" value="<?php echo $paymentFor; ?>" id="Payment_For" readonly placeholder="Enter payment details" aria-describedby="Payment_ForPrepend">
+                      <input type="hidden" name="Hour/s" value="1 hr">
+                      <input type="hidden" step="0.01" min="0.01" name="Amount" class="form-control form-control-lg required" value="<?php echo number_format($amount, 2, '.', ''); ?>" id="Amount" readonly placeholder="0.00" aria-describedby="AmountPrepend">
+                      <input type="hidden" name="Date" value="">
+                    </div>
+                    <div class="col-md-4 col-sm-12">
+                      <div class="card">
+                        <div class="card-body">
+                          <h3 class="card-title"><strong><?php echo $paymentFor ?></strong></h3>
+                          <p class="card-text">1 hr | $<?php echo $amount ?></p>
+                          <hr>
+                          <p><span class="dateselected"></span> <span class="timeselected"></span></p>
+                          <button class="btn btn-primary nextBtn btn-block pull-right text-bold fnext" type="button" style="display:none">Next</button>
+                        </div>
+                      </div>
+                    </div>
+</div>
