@@ -1,0 +1,11 @@
+- apilon pud diay si wp-includes nga folder ug 555
+- akoa gi 555 si wp-content. (ni word na)
+else{
+- ibalihin ang form sa root folder.
+}
+else {
+feel nako gi 555 to nako ang kani nga mga folders master ay
+plugins
+proweaverforms
+forms || na try nimo 644 ug 777 pud master?
+}
