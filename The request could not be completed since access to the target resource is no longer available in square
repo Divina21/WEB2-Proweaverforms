@@ -1,0 +1,6 @@
+1. login to square account of the Client.
+2. On the left sidebar, scroll down and click "App Integration".
+3. Under 'My Applications' select the your account's application.
+4. A pop-up will show and then click "View in the developer dashboard".
+5. Scroll down until "API Version" > Change Version > choose version 2021-09-15.
+6. Done.
