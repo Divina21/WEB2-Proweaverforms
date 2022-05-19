@@ -106,3 +106,9 @@ Solution 4. (Proweaver plugin)
 3. Fill in from prtool smtp databank.
 4. Done.
 =================================================================================================================================================
+Solution 5
+
+1. Go to functions.php then pangitaa ang $parameter nga naka array. Dayon sa "from_email" niya kay e change sa "noreply@proweaversend.com". Try ug test balik.
+
+================================================================================================================================================================
+
