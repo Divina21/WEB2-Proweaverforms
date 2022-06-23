@@ -1,0 +1,61 @@
+Problem: Redirect form from other team to our payment form. Then use the data form their form and put it inside our fields.
+Solution:
+1. Go to other team's form.
+2. Sa ilang script sa ubos, mag add kag function na eneg submit sa ilahang form kay kuhaon ilang data ug e save as session sa browser.
+- use the js function to set data, sessionStorage.setItem("lastname", "Smith");
+- use the js function to get data, sessionStorage.getItem("lastname", "Smith");
+
+$('#formIdHere').submit(function(){
+ var fullname = $('#fullName').val();
+ var email = $('#email').val();
+ var contact = $('#contact').val();
+ 
+ sessionStorage.setItem("fullname", fullname);
+ sessionStorage.setItem("email", email);
+ sessionStorage.setItem("contact", contact);
+ 
+ 		if($(this).valid()){
+			$('.load_holder').css('display','block');
+			self.parent.$('html, body').animate(
+				{ scrollTop: self.parent.$('#myframe').offset().top },
+				500
+			);
+		}
+		if(grecaptcha.getResponse() == "") {
+			var $recaptcha = document.querySelector('#g-recaptcha-response');
+				$recaptcha.setAttribute("required", "required");
+				$('.g-recaptcha').addClass('errors').attr('id','recaptcha');
+		  }
+ 
+});
+
+3. After submit sa ilahang form kay naay mo pop-up message, dapat eneg close ana mo redirect sa ato-ang payment form, add this code sa js.
+	$( ".close" ).click(function() {
+		window.parent.location.href='https://w3880.proweaversite3.com/non-emergency-medical-transportation-pay-now';
+	});
+  
+ 4. After ma set and data as session sa JS, adto naka sa atoang form, sa script sa ubos kay kuhaon nimo ang session then e save nimo as variable. Then set input
+ property as read only, do this:
+ 
+ $(document).ready(function(){
+ 
+ $('.inputClassHere').prop('readonly', true);
+ 
+ var fullName = sessionStorage.getItem("fullname", fullname);
+ var email = sessionStorage.getItem("email", email);
+ var contact = sessionStorage.getItem("contact", contact);
+ 
+         if(sessionStorage.getItem("fullname", fullname) == null){
+              window.parent.location.href = "https://w3880.proweaversite3.com/non-emergency-medical-transportation-booking";
+					    return false;
+            }
+              $('#Full_Name').val(fullname);
+              $('#Email').val(email);
+              $('#Phone').val(contact);
+
+         $('#form_recaptcha .recaptcha-checkbox-checkmark').addClass('required');
+ 
+ });
+ 
+ 5. Done.
+ ============================================
