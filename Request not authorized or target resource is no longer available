@@ -1,3 +1,18 @@
 https://office.orchestra.tools/tasks/viewtask/1199865
 > sa proweaver forms ni siya sa "Request not authorized" kay meaning ani wrong iyang creddentials then sa "Target source is no longer available" kay naay e set sa square ani 
 para ma ok siya. mangayo ka ug square login credentials ani. API version nga e change ani niya.
+
+=========================
+
+Request not authorized
+adto payment asset na folder
+
+dayon sqaure.php
+
+icomment out na ang $new_url
+
+ilisi ani 
+curl_setopt($ch, CURLOPT_URL, "https://connect.squareup".(TEST_MODE ? 'sandbox' : '').".com/v2/locations/".$this->location_id."/transactions");
+
+
+=======================
